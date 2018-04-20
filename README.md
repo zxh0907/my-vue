@@ -1,9 +1,12 @@
 # my
 
 > A Vue.js project
-# create-vue-app脚手架，vue-router, vuex
-# ajax: axios, fetch-jsonp
-#
+
+``` bash
+create-vue-app脚手架，vue-router, vuex
+ajax: axios, fetch-jsonp
+contains: filters, util一点常用方法，flexible.js
+```
 
 ## Build Setup
 
