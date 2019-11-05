@@ -34,7 +34,14 @@ export default {
 
 	    return query;
   },
-
+  queryToString (query) {
+    let str = [];
+    for(let k in query){
+      str.push(k + "=" + query[k]);
+    }
+    str = str.join("&");
+    return str;
+  },
   parseJson(json) {
     let obj = {};
     try {
@@ -110,5 +117,62 @@ export default {
 	    }
 	    fn(true);
     } 
-  }
+  },
+  /**
+     * Cookie读写操作的封装
+     * @type {Object}
+     */
+  cookie: {
+    get : function(key) {
+      try {
+        var a, reg = new RegExp("(^| )" + key + "=([^;]*)(;|$)");
+        if(a = doc.cookie.match(reg)){
+          return unescape(a[2]);
+        }else{
+          return "";
+        }
+      } catch(e) { 
+        return "";
+      }
+    }, 
+    set : function(key, val, options) {
+      options = options || {};
+      var expires = options.expires;
+
+      if(typeof(expires) === "number"){
+        expires = new Date();
+        expires.setTime(expires.getTime() + options.expires);
+      }
+
+      try {
+        doc.cookie =
+          key + "=" + escape(val)
+          + (expires ? ";expires=" + expires.toGMTString() : "")
+          + (options.path ? ";path=" + options.path : "")
+          + (options.domain ? "; domain=" + options.domain : "");
+      } catch(e) {}
+    }
+  },
+  //两个json做比较，返回不同的部分
+  jsonDiff(obj1, obj2) {
+    const result = {};
+    if (Object.is(obj1, obj2)) {
+        return undefined;
+    }
+    if (!obj2 || typeof obj2 !== 'object') {
+        return obj2;
+    }
+    Object.keys(obj1 || {}).concat(Object.keys(obj2 || {})).forEach(key => {
+        if(obj2[key] !== obj1[key] && !Object.is(obj1[key], obj2[key])) {
+            result[key] = obj2[key];
+        }
+        if(typeof obj2[key] === 'object' && typeof obj1[key] === 'object') {
+            const value = diff(obj1[key], obj2[key]);
+            if (value !== undefined) {
+                result[key] = value;
+            }
+        }
+    });
+    return result;
+}
 }
